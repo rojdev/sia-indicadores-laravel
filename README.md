@@ -7,40 +7,55 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## Command Line
+## Setup con Docker Compose (Recomendado)
 
-Use PHP 7.4 Version
+Esta es la forma más rápida y sencilla de levantar el proyecto de forma local:
 
-Clone Laravel08BaseApp
+### 1. Preparar las variables de entorno
+Copia el archivo de ejemplo para crear tu `.env`:
+```bash
+cp .env.example .env
+```
+*(Nota: El archivo `.env` ya viene preconfigurado para conectarse al contenedor de base de datos MySQL `basededatos`)*.
 
-$ composer install
+### 2. Construir e iniciar contenedores
+Usa docker compose para levantar los servicios (Aplicación, MySQL, phpMyAdmin):
+```bash
+docker compose up -d
+```
 
-run .env.example with .env
-configure your access database (MySQl || PostgreSQL | more...)
+### 3. Instalar dependencias de PHP
+Ejecuta la instalación de Composer dentro del contenedor ignorando requerimientos de plataforma para evitar problemas con la versión de PHP:
+```bash
+docker compose run indicadores composer install --ignore-platform-reqs
+```
 
-$ php artisan key:generate
+### 4. Generar Key y Configurar Storage
+Genera la clave del proyecto y crea los enlaces de storage requeridos:
+```bash
+docker compose exec indicadores php artisan key:generate
+docker compose exec indicadores php artisan storage:link
+```
 
-configure your smtp gmail, mail and password
+Asegúrate de crear el directorio de avatares en public storage si es necesario:
+```bash
+docker compose exec indicadores mkdir -p storage/app/public/avatars
+```
 
-$ php artisan storage:link
+### 5. Correr Migraciones y Seeders
+Ejecuta las migraciones de base de datos junto con el sembrado de datos iniciales:
+```bash
+docker compose exec indicadores php artisan migrate:fresh --seed
+```
 
-create new folder name "avatars" in /storage/app/public/
-
-$ php artisan migrate
-
-change into /database/seeders/usersSeeders.php your true or real information
-
-$ php artisan db:seed
-
- $ php artisan serve
-
-the server run in port=8000 default.
-
-In new terminal run this command #-->
-
-$ nohup php artisan queue:work database &
-
-and then read the file pdf in folder public the file Proyecto_HORUS.pdf
+### 6. Acceder a la Aplicación
+*   **Aplicación web:** [http://localhost:7777](http://localhost:7777)
+    *   **Usuario por defecto:** `pataxjose@gmail.com`
+    *   **Contraseña:** `123456789`
+*   **phpMyAdmin (Administrador DB):** [http://localhost:8080](http://localhost:8080)
+    *   **Host:** `basededatos`
+    *   **Usuario:** `innovacion`
+    *   **Contraseña:** `innovacion123`
 
 
 ## About Laravel
