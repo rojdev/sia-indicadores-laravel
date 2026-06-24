@@ -1,0 +1,43 @@
+services:
+  indicadores:
+    build: .
+    container_name: indicadores
+    ports:
+      - "7777:7777"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - basededatos
+    environment:
+      - APP_KEY=base64:qqYw+pFy9gcgcDK8Ksq0yehKY1tHNcvZStzjcylCq9E=
+      - DB_HOST=basededatos
+      - DB_DATABASE=alcadia
+      - DB_USERNAME=innovacion
+      - DB_PASSWORD=innovacion123
+
+  basededatos:
+    image: mysql:latest
+    container_name: basededatos
+    ports:
+      - "3310:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: innovacion123*
+      MYSQL_DATABASE: alcadia
+      MYSQL_USER: innovacion
+      MYSQL_PASSWORD: innovacion123
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin-container
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: basededatos
+      PMA_PORT: 3306
+    depends_on:
+      - basededatos
+
+volumes:
+  mysql_data:
